@@ -1,0 +1,42 @@
+(* character classes *)
+
+lowercase letter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+                 | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+                 | "u" | "v" | "w" | "x" | "y" | "z" ;
+uppercase letter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
+                 | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+                 | "U" | "V" | "W" | "X" | "Y" | "Z" ;
+digit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+character = ? any valid character in input encoding ? ;
+(* Note: character is not just any sequence of bytes. For example, for a UTF-8
+   input file it must be a valid UTF-8 sequence. *)
+
+string character = character - "\"
+                 | "\", "\"
+                 | "\", '"' ;
+
+(*
+  Tokens.
+
+  These should be processed by a separate layer of logic. All of the lexical
+  items are defined in terms of these tokens, and them alone.
+*)
+
+string = '"', { string character }, '"' ;
+number = [ "+" | "-" ], digit, { digit }, [ ".", digit, { digit } ] ;
+equals = "=" ;
+begin value = "(" ;
+end value = ")" ;
+begin prophecy = "[";
+end prophecy = "]";
+
+
+(* lexical items *)
+
+complex = { value | string, equals, value } ;
+value = scalar | begin value, narrative, end value ;
+prophecy = begin prophecy, narrative, end prophecy ;
+narrative = complex | { prophecy, complex } ;
+
+
+zoo configuration = narrative ;
